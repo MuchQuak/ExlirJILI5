@@ -88,10 +88,26 @@ defmodule Main do
     end
 
     def eval_op(op, args) do
-        expr = [op, args]
+        expr = [op | args]
         case expr do
             [:error, arg] ->
-                raise("JILI user-error: ~")
+                raise("JILI user-error: #{arg}")
+            [oper, v1, v2] when oper in [:-, :+, :"<=", :*, :/] -> # not checking if v1 and v2 are PrimV structs
+                r1 = v1.v
+                r2 = v2.v # need to check if these are real values
+                case op do
+                    :+ -> %PrimV{v: r1 + r2}
+                    :- -> %PrimV{v: r1 - r2}
+                    :* -> %PrimV{v: r1 * r2}
+                    :"<=" -> %PrimV{v: r1 <= r2}
+                    :/ ->
+                        if r2 == 0 do
+                            raise("divison by zero error")
+                        else %PrimV{v: r1 / r2}
+                    end
+                end
+            [:equal?, a1, a2] -> %PrimV{v: a1 == a2}
+            _ -> raise("JILI operator not supported")
         end
     end
 
@@ -125,5 +141,9 @@ defmodule Main do
     end
 end
 
-# test cases
+# test cases -- paste into command line for now
 # Main.interp(%CondC{test: %IdC{s: :true}, then: %StringC{s: "branch eval"}, else: %StringC{s: "never going to reach"}}, Main.top_env)
+
+# Main.interp(%AppC{fun: %IdC{s: :+}, args: [%NumC{n: 5}, %AppC{fun: %IdC{s: :-}, args: [%NumC{n: 2}, %NumC{n: 3}]}]}, Main.top_env) #should be 4
+
+# Main.interp(%CondC{test: %AppC{fun: %IdC{s: :"<="}, args: [%NumC{n: 4}, %NumC{n: 5}]}, then: %StringC{s: "entered first branch"}, else: %StringC{s: "entered else branch"}}, Main.top_env) #entered first branch
