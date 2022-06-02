@@ -35,8 +35,8 @@ defmodule PrimV do
 end
 
 defmodule CloV do
-    @enforce_keys [:args, :body, :env]
-    defstruct [:args, :body, :env]
+    @enforce_keys [:args, :body, :e]
+    defstruct [:args, :body, :e]
 end
 
 # no OpV
@@ -63,6 +63,38 @@ defmodule Main do
         end
     end
 
+    def interp_args(argVals, env) do
+        Enum.map(argVals, fn val -> interp(val, env) end)
+    end
+
+    def bind_args(argVals, argIds, env) do
+        cond do
+            length(argVals) != length(argIds) ->
+                raise("function was given wrong number of args")
+            true ->
+                case argVals do
+                    [first_argVals, rest_argVals] ->
+                        case argIds do
+                            [first_argIds, rest_argIds] ->
+                                cond do
+                                    length(argVals) == 1 ->
+                                        Map.put(env, first_argIds, first_argVals)
+                                    true ->
+                                        bind_args(rest_argVals, rest_argIds, Map.put(env, first_argIds, first_argVals))
+                                end
+                        end
+                end
+        end
+    end
+
+    def eval_op(op, args) do
+        expr = [op, args]
+        case expr do
+            [:error, arg] ->
+                raise("JILI user-error: ~")
+        end
+    end
+
     def interp(exp, env) do
         case exp do
             %NumC{n: num} -> %PrimV{v: num}
@@ -75,6 +107,15 @@ defmodule Main do
                     true ->
                         interp(c, env)
                 end
+            %AppC{fun: f, args: aVals} ->
+                f = interp(f, env)
+                case f do
+                    %CloV{args: a, body: b, e: clov_e} ->
+                        interp(b, bind_args(interp_args(aVals, env), a, clov_e))
+                    _ -> eval_op(f, interp_args(aVals, env))
+                end
+            %LamC{args: a, body: b} ->
+                %CloV{args: a, body: b, e: env}
             %IdC{s: str} ->
                 cond do
                   no_idc(str) -> raise("not valid idc")
