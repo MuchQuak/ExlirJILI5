@@ -57,7 +57,7 @@ defmodule Main do
     def lookup(n, env) do
         find = env[n]
         if find == nil do
-          raise("var is undefined")
+          raise("var is undefined #{n}")
         else
             find
         end
@@ -67,15 +67,19 @@ defmodule Main do
         Enum.map(argVals, fn val -> interp(val, env) end)
     end
 
+
+   # def bind_args([], [], env) do: niol
+
     def bind_args(argVals, argIds, env) do
+
         cond do
             length(argVals) != length(argIds) ->
                 raise("function was given wrong number of args")
             true ->
                 case argVals do
-                    [first_argVals, rest_argVals] ->
+                    [first_argVals | rest_argVals] ->
                         case argIds do
-                            [first_argIds, rest_argIds] ->
+                            [first_argIds | rest_argIds] ->
                                 cond do
                                     length(argVals) == 1 ->
                                         Map.put(env, first_argIds, first_argVals)
@@ -147,3 +151,5 @@ end
 # Main.interp(%AppC{fun: %IdC{s: :+}, args: [%NumC{n: 5}, %AppC{fun: %IdC{s: :-}, args: [%NumC{n: 2}, %NumC{n: 3}]}]}, Main.top_env) #should be 4
 
 # Main.interp(%CondC{test: %AppC{fun: %IdC{s: :"<="}, args: [%NumC{n: 4}, %NumC{n: 5}]}, then: %StringC{s: "entered first branch"}, else: %StringC{s: "entered else branch"}}, Main.top_env) #entered first branch
+
+# Main.interp(%AppC{fun: %LamC{args: [:x, :y], body: %AppC{fun: %IdC{s: :+}, args: [%IdC{s: :x}, %AppC{fun: %IdC{s: :-}, args: [%NumC{n: 2}, %IdC{s: :y}]}]}}, args: [%NumC{n: 3}, %NumC{n: 4}]}, Main.top_env) #should be 1
