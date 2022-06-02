@@ -1,4 +1,3 @@
-
 defmodule NumC do
     @enforce_keys [:n]
     defstruct [:n]
@@ -40,7 +39,6 @@ defmodule CloV do
 end
 
 # no OpV
-
 
 defmodule Main do
     def top_env, do: %{+: :+, /: :/, -: :-, *: :*, <=: :"<=", true: %PrimV{v: true}, false: %PrimV{v: false}, error: :error, equal?: :equal?}
@@ -145,11 +143,12 @@ defmodule Main do
     end
 end
 
+
 # test cases -- paste into command line for now
-# Main.interp(%CondC{test: %IdC{s: :true}, then: %StringC{s: "branch eval"}, else: %StringC{s: "never going to reach"}}, Main.top_env)
+#Main.interp(%CondC{test: %IdC{s: :true}, then: %StringC{s: "branch eval"}, else: %StringC{s: "never going to reach"}}, Main.top_env)
 
-# Main.interp(%AppC{fun: %IdC{s: :+}, args: [%NumC{n: 5}, %AppC{fun: %IdC{s: :-}, args: [%NumC{n: 2}, %NumC{n: 3}]}]}, Main.top_env) #should be 4
+#Main.interp(%AppC{fun: %IdC{s: :+}, args: [%NumC{n: 5}, %AppC{fun: %IdC{s: :-}, args: [%NumC{n: 2}, %NumC{n: 3}]}]}, Main.top_env) #should be 4
 
-# Main.interp(%CondC{test: %AppC{fun: %IdC{s: :"<="}, args: [%NumC{n: 4}, %NumC{n: 5}]}, then: %StringC{s: "entered first branch"}, else: %StringC{s: "entered else branch"}}, Main.top_env) #entered first branch
+#Main.interp(%CondC{test: %AppC{fun: %IdC{s: :"<="}, args: [%NumC{n: 4}, %NumC{n: 5}]}, then: %StringC{s: "entered first branch"}, else: %StringC{s: "entered else branch"}}, Main.top_env) #entered first branch
 
-# Main.interp(%AppC{fun: %LamC{args: [:x, :y], body: %AppC{fun: %IdC{s: :+}, args: [%IdC{s: :x}, %AppC{fun: %IdC{s: :-}, args: [%NumC{n: 2}, %IdC{s: :y}]}]}}, args: [%NumC{n: 3}, %NumC{n: 4}]}, Main.top_env) #should be 1
+#Main.interp(%AppC{fun: %LamC{args: [:x, :y], body: %AppC{fun: %IdC{s: :+}, args: [%IdC{s: :x}, %AppC{fun: %IdC{s: :-}, args: [%NumC{n: 2}, %IdC{s: :y}]}]}}, args: [%NumC{n: 3}, %NumC{n: 4}]}, Main.top_env) #should be 1
