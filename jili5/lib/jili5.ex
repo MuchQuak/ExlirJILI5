@@ -153,7 +153,4 @@ defmodule Jili5 do
       end
   end
 
-  def hello do
-    :world
-  end
 end
