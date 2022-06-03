@@ -43,17 +43,8 @@ defmodule Jili5 do
   Documentation for `Jili5`.
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Jili5.hello()
-      :world
-
-  """
-
   def top_env, do: %{+: :+, /: :/, -: :-, *: :*, <=: :"<=", true: %PrimV{v: true}, false: %PrimV{v: false}, error: :error, equal?: :equal?}
+
   def no_idc(sym) do
       case sym do
           :in -> true
@@ -62,6 +53,27 @@ defmodule Jili5 do
           :"=>" -> true
           _ -> false
       end
+  end
+
+  defprotocol Parse do
+    def prog(p)
+  end
+
+  defimpl Parse, for: Integer  do
+    def prog(p), do: %NumC{n: p}
+  end
+
+  defimpl Parse, for: BitString  do
+    def prog(p), do: %StringC{s: p}
+  end
+
+  defimpl Parse, for: Atom do
+    def prog(p), do: %IdC{s: p}
+  end
+
+  def createAst(p) do
+    s = quote do: unquote(p)
+    Parse.prog(s)
   end
 
   def lookup(n, env) do

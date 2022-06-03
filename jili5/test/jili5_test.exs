@@ -1,3 +1,20 @@
+defmodule Jili5ParseTests do
+  use ExUnit.Case
+
+  test "parse number" do
+    assert Jili5.Parse.prog(4) == %NumC{n: 4}
+  end
+
+  test "parse String" do
+    assert Jili5.Parse.prog("Noice") == %StringC{s: "Noice"}
+  end
+
+  test "parse IdC " do
+    assert Jili5.Parse.prog(:x) == %IdC{s: :x}
+  end
+  
+end
+
 defmodule Jili5InterpTests do
   use ExUnit.Case
 
@@ -9,15 +26,43 @@ defmodule Jili5InterpTests do
     assert Jili5.interp(%IdC{s: :true}, Jili5.top_env) == %PrimV{v: true}
   end
 
+  test "interp IdC False" do
+    assert Jili5.interp(%IdC{s: :false}, Jili5.top_env) == %PrimV{v: false}
+  end
+
   test "interp StringC" do
     assert Jili5.interp(%StringC{s: "str"}, Jili5.top_env) == %PrimV{v: "str"}
   end
 
-  test "interp AppC Prim Op" do
+  test "interp AppC +" do
     assert Jili5.interp(
       %AppC{
       fun: %IdC{s: :+}, 
       args: [%NumC{n: 4}, %NumC{n: 4}]},
+      Jili5.top_env) == %PrimV{v: 8}
+  end
+
+  test "interp AppC /" do
+    assert Jili5.interp(
+      %AppC{
+      fun: %IdC{s: :/}, 
+      args: [%NumC{n: 4}, %NumC{n: 2}]},
+      Jili5.top_env) == %PrimV{v: 2}
+  end
+
+  test "interp AppC *" do
+    assert Jili5.interp(
+      %AppC{
+      fun: %IdC{s: :*}, 
+      args: [%NumC{n: 4}, %NumC{n: 4}]},
+      Jili5.top_env) == %PrimV{v: 16}
+  end
+
+  test "interp AppC -" do
+    assert Jili5.interp(
+      %AppC{
+      fun: %IdC{s: :-}, 
+      args: [%NumC{n: 12}, %NumC{n: 4}]},
       Jili5.top_env) == %PrimV{v: 8}
   end
 
@@ -68,5 +113,4 @@ defmodule Jili5InterpTests do
         args: [%NumC{n: 3}]}, 
     Jili5.top_env) == %PrimV{v: 7}
   end
-
 end
